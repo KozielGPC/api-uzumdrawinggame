@@ -1,0 +1,70 @@
+generator client {
+  provider           = "prisma-client-js"
+  output             = "@generated"
+  noAtomicOperations = true
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id String @id @default(uuid()) @db.Uuid
+
+  username String @db.Text
+
+  Room Room[]
+
+  Round_Sender   Round[] @relation("round_sender")
+  Round_Receiver Round[] @relation("round_receiver")
+
+  Match_Player Match[] @relation("match_player")
+  Match_Adm    Match[] @relation("match_adm")
+  @@map("users")
+}
+
+model Match {
+  id String @id @default(uuid()) @db.Uuid
+
+  match_adm_id String @db.Uuid
+
+  players User[] @relation("match_player")
+
+  match_adm User @relation(fields: [match_adm_id], references: [id], name: "match_adm")
+
+  @@map("matches")
+}
+
+model Round {
+  id String @id @default(uuid()) @db.Uuid
+
+  match_id String @db.Uuid
+
+  sender_id String @db.Uuid
+
+  receiver_id String @db.Uuid
+
+  content String @db.Text
+
+  /// @HideField({  input: true })
+  sender User @relation(fields: [sender_id], references: [id], name: "round_sender", map: "round_sender")
+
+  /// @HideField({ input: true })
+  receiver User @relation(name: "round_receiver", fields: [sender_id], references: [id], map: "round_receiver")
+
+  @@map("rounds")
+}
+
+model Room {
+  id String @id @default(uuid()) @db.Uuid
+
+  room_code String @db.Text
+
+  room_adm_id String @db.Uuid
+
+  /// @HideField({ input: true })
+  room_adm User @relation(fields: [room_adm_id], references: [id])
+
+  @@map("rooms")
+}
