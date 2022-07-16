@@ -11,4 +11,16 @@ export class UserService {
             data: data
         })
     }
+
+    async findAll() {
+        return this.prisma.user.findMany({
+            include: {
+                Match_Adm: true,
+                Match_Player: true,
+                Room: true,
+                Round_Receiver: true,
+                Round_Sender: true,
+            }
+        })
+    }
 }
