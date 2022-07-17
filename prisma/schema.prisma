@@ -14,7 +14,7 @@ model User {
 
   username String @db.Text
 
-  active Boolean @db.Boolean
+  active Boolean @default(true) @db.Boolean
 
   created_at DateTime @default(now()) @db.Date
 
@@ -79,7 +79,7 @@ model Room {
 
   room_adm_id String @db.Uuid
 
-  active Boolean @db.Boolean
+  active Boolean @default(true) @db.Boolean
 
   created_at DateTime @default(now()) @db.Date
 
@@ -100,7 +100,7 @@ model RoomHasUsers {
 
   user_id String @db.Uuid
 
-  active Boolean @db.Boolean
+  active Boolean @default(true) @db.Boolean
 
   created_at DateTime @default(now()) @db.Date
 
@@ -119,7 +119,7 @@ model MatchHasUsers {
 
   user_id String @db.Uuid
 
-  active Boolean @db.Boolean
+  active Boolean @default(true) @db.Boolean
 
   created_at DateTime @default(now()) @db.Date
 
