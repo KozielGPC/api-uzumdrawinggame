@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
 import { RoomService } from './room.service';
@@ -15,6 +15,11 @@ export class RoomController {
   @Get()
   async findAll() {
     return this.roomService.findAll();
+  }
+
+  @Get('/:id')
+  async findOne(@Param() param: { id: string }) {
+    return this.roomService.findOne(param.id);
   }
 
   @Patch()

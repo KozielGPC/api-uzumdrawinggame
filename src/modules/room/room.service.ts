@@ -2,6 +2,7 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/database/PrismaService';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
+import { UUIDv4 } from "uuid-v4-validator";
 
 @Injectable()
 export class RoomService {
@@ -43,21 +44,24 @@ export class RoomService {
     }
 
     async findOne(id) {
-        return this.prisma.room.findFirst({
+        if (!UUIDv4.validate(id)) {
+            throw new HttpException('Invalid id', 400);
+        }
+        const room = this.prisma.room.findFirst({
             where: {
                 id: id,
-                users: {
-                    some: {
-                        active: true
-                    }
-                }
             },
             include: {
                 room_adm: true,
                 matches: true,
                 users: true,
             }
-        })
+        });
+
+        if (!room) {
+            throw new HttpException('Room not found', 404);
+        }
+        return room;
     }
 
     async update(data: UpdateRoomDto) {
