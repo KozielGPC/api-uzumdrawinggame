@@ -92,7 +92,7 @@ export class RoomService {
 
 
 
-        if (room_user.active) {
+        if (room_user && room_user.active) {
             throw new HttpException('This user is already in the room', 409);
         }
         return this.prisma.roomHasUsers.create({
