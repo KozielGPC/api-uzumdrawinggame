@@ -19,7 +19,8 @@ export class RoomService {
         return this.prisma.roomHasUsers.create({
             data: {
                 user_id: data.room_adm_id,
-                room_id: room.id
+                room_id: room.id,
+
             },
             select: {
                 room: {

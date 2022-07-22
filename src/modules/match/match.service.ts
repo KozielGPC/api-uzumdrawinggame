@@ -18,9 +18,7 @@ export class MatchService {
         });
 
         const sort = users.map((user) => user.user.id).sort(() => Math.random() - 0.5);
-        console.log(sort);
 
-        console.log(users);
         const match = await this.prisma.match.create({
             data: {
                 sort: sort.toString(),
@@ -56,11 +54,12 @@ export class MatchService {
     }
 
     async findAll() {
-        return this.prisma.room.findMany({
+        return this.prisma.match.findMany({
             include: {
-                room_adm: true,
-                matches: true,
-                users: true
+                match_adm: true,
+                room: true,
+                rounds: true,
+                users: true,
             }
         })
     }
