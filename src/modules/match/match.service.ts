@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/database/PrismaService';
 import { CreateMatchDto } from './dto/create-match.dto';
 
@@ -75,5 +75,27 @@ export class MatchService {
                 users: true,
             }
         })
+    }
+
+    async findRoundsOfMatch(match_id: string) {
+        const match = await this.prisma.match.findFirst({
+            where: {
+                id: match_id,
+            },
+            include: {
+                rounds: {
+                    include: {
+                        receiver: true,
+                        sender: true,
+                    }
+                }
+            }
+        })
+
+        if (!match) {
+            throw new HttpException('Match not found', 404);
+        }
+
+        return match;
     }
 }

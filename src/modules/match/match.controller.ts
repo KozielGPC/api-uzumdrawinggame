@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { CreateMatchDto } from './dto/create-match.dto';
 import { MatchService } from './match.service';
 
@@ -14,5 +14,10 @@ export class MatchController {
   @Get()
   async findAll() {
     return this.matchService.findAll();
+  }
+
+  @Get('rounds/:match_id')
+  findRoundsOfMatch(@Param('match_id') match_id: string) {
+    return this.matchService.findRoundsOfMatch(match_id);
   }
 }
