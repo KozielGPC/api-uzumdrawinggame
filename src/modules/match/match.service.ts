@@ -17,7 +17,20 @@ export class MatchService {
             }
         });
 
-        const sort = users.map((user) => user.user.id).sort(() => Math.random() - 0.5);
+        const sort = [data.match_adm_id];
+
+        const sorted_players = users.map((user) => {
+            if (user.user.id != data.match_adm_id) {
+                return user.user.id;
+            }
+            user.user.id !== data.match_adm_id
+        }).sort(() => Math.random() - 0.5);
+
+        sorted_players.map((player) => {
+            if (player) {
+                sort.push(player)
+            }
+        })
 
         const match = await this.prisma.match.create({
             data: {
