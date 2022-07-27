@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
-import { CreateRoomDto } from './dto/create-room.dto';
+import { JoinRoomDto } from './dto/join-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
 import { RoomService } from './room.service';
 
@@ -8,8 +8,8 @@ export class RoomController {
   constructor(private readonly roomService: RoomService) { }
 
   @Post()
-  async create(@Body() data: CreateRoomDto) {
-    return this.roomService.create(data);
+  async join(@Body() data: JoinRoomDto) {
+    return this.roomService.join(data);
   }
 
   @Get()

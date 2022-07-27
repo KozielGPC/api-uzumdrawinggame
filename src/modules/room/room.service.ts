@@ -1,26 +1,79 @@
-import { HttpException, Injectable } from '@nestjs/common';
+
 import { PrismaService } from 'src/database/PrismaService';
-import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
-import { UUIDv4 } from "uuid-v4-validator";
+import { JoinRoomDto } from './dto/join-room.dto';
+import { HttpException, Injectable } from '@nestjs/common';
+import { UUIDv4 } from 'uuid-v4-validator';
 
 @Injectable()
 export class RoomService {
     constructor(private prisma: PrismaService) { }
 
-    async create(data: CreateRoomDto) {
-        const room = await this.prisma.room.create({
-            data: {
-                room_adm_id: data.room_adm_id,
+    async join(data: JoinRoomDto) {
+        let room = await this.prisma.room.findFirst({
+            where: { 
                 room_code: data.room_code,
             }
         });
 
-        return this.prisma.roomHasUsers.create({
-            data: {
-                user_id: data.room_adm_id,
-                room_id: room.id,
+        if (!room) {
+            room = await this.prisma.room.create({
+                data: {
+                    room_adm_id: data.user_id,
+                    room_code: data.room_code,
+                }
+            });
+        }
 
+        if (!room.active) {
+            await this.prisma.room.update({
+                where: {
+                    id: room.id,
+                },
+                data: {
+                    active: true,
+                    room_adm_id: data.user_id,
+                    updated_at: new Date(),
+                }
+            })
+        }
+
+        const userInRoom = await this.prisma.roomHasUsers.findFirst({
+            where: {
+                room_id: room.id,
+                user_id: data.user_id
+            }
+        })
+
+        if (!userInRoom) {
+            return this.prisma.roomHasUsers.create({
+                data: {
+                    user_id: data.user_id,
+                    room_id: room.id,
+    
+                },
+                select: {
+                    room: {
+                        include: {
+                            matches: true,
+                            room_adm: true,
+                            users: true,
+                        }
+                    }
+                }
+            })
+        }
+
+        return this.prisma.roomHasUsers.update({
+            where: {
+                room_id_user_id: {
+                    room_id: room.id,
+                    user_id: data.user_id
+                },
+            },
+            data:{
+                active: true,
+                updated_at: new Date(),
             },
             select: {
                 room: {
@@ -32,6 +85,7 @@ export class RoomService {
                 }
             }
         })
+        
     }
 
     async findAll() {
