@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/database/PrismaService';
-import { CreateUserDto } from './dto/create-user.dto';
+import { LoginDto } from './dto/login.dto';
 
 @Injectable()
 export class UserService {
     constructor(private prisma: PrismaService) { }
 
-    async create(data: CreateUserDto) {
-        return this.prisma.user.create({
-            data: {
-                username: data.username,
+    async create(data: LoginDto) {
+        const user = await this.prisma.user.findFirst({
+            where: {
+                username: data.username
             },
             include: {
                 adm_rooms: true,
@@ -19,7 +19,45 @@ export class UserService {
                 receiver_rounds: true,
                 sender_rounds: true,
             }
-        })
+        });
+
+        if (!user) {
+            return this.prisma.user.create({
+                data: {
+                    username: data.username,
+                },
+                include: {
+                    adm_rooms: true,
+                    rooms: true,
+                    adm_matches: true,
+                    matches: true,
+                    receiver_rounds: true,
+                    sender_rounds: true,
+                }
+            })
+        }
+        else if (user.active == false){
+            return this.prisma.user.update({
+                where: {
+                    id: user.id
+                },
+                data: {
+                    active: true,
+                    updated_at: new Date(),
+                },
+                include: {
+                    adm_rooms: true,
+                    rooms: true,
+                    adm_matches: true,
+                    matches: true,
+                    receiver_rounds: true,
+                    sender_rounds: true,
+                }
+            })
+        }
+        else{
+            return user;
+        }
     }
 
     async findAll() {
