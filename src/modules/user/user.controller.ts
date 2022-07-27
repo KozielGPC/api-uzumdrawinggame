@@ -1,18 +1,24 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post } from '@nestjs/common';
 import { LoginDto } from './dto/login.dto';
+import { LogoffDto } from './dto/logoff.dto';
 import { UserService } from './user.service';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) { }
+    constructor(private readonly userService: UserService) {}
 
-  @Post()
-  async login(@Body() data: LoginDto) {
-    return this.userService.create(data);
-  }
+    @Post()
+    async login(@Body() data: LoginDto) {
+        return this.userService.create(data);
+    }
 
-  @Get()
-  async findAll() {
-    return this.userService.findAll();
-  }
+    @Patch()
+    async logoff(@Body() data: LogoffDto) {
+        return this.userService.logoff(data);
+    }
+
+    @Get()
+    async findAll() {
+        return this.userService.findAll();
+    }
 }
