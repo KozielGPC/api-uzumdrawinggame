@@ -30,4 +30,9 @@ export class SocketGateway implements OnGatewayInit, OnGatewayConnection, OnGate
     handleMessage(client: Socket, payload: string): void {
         this.server.emit('msgToClient', payload, client.id);
     }
+
+    @SubscribeMessage('sendMessage')
+    chatMessage(client: Socket, payload: string): void {
+        this.server.emit('messageReceived', payload, client.id);
+    }
 }
