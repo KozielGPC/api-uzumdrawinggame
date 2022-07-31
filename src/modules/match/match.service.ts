@@ -78,6 +78,9 @@ export class MatchService {
                 rounds: true,
                 users: true,
             },
+            orderBy: {
+                created_at: 'desc',
+            },
         });
     }
 
@@ -93,6 +96,9 @@ export class MatchService {
                         sender: true,
                     },
                 },
+            },
+            orderBy: {
+                created_at: 'desc',
             },
         });
 

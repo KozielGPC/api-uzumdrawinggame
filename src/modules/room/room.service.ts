@@ -93,6 +93,9 @@ export class RoomService {
                 matches: true,
                 users: true,
             },
+            orderBy: {
+                created_at: 'desc',
+            },
         });
     }
 

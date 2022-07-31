@@ -90,6 +90,9 @@ export class UserService {
                 receiver_rounds: true,
                 sender_rounds: true,
             },
+            orderBy: {
+                created_at: 'desc',
+            },
         });
     }
 }

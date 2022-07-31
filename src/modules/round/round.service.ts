@@ -21,8 +21,12 @@ export class RoundService {
         });
     }
 
-    findAll() {
-        return this.prisma.round.findMany();
+    async findAll() {
+        return this.prisma.round.findMany({
+            orderBy: {
+                created_at: 'desc',
+            },
+        });
     }
 
     // findOne(id: number) {
