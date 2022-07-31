@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { LoginDto } from './dto/login.dto';
 import { LogoffDto } from './dto/logoff.dto';
 import { UserService } from './user.service';
@@ -20,5 +20,10 @@ export class UserController {
     @Get()
     async findAll() {
         return this.userService.findAll();
+    }
+
+    @Get('/:id')
+    async findOne(@Param() param: { id: string }) {
+        return this.userService.findOne(param.id);
     }
 }

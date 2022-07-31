@@ -1,5 +1,6 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/database/PrismaService';
+import { UUIDv4 } from 'uuid-v4-validator';
 import { LoginDto } from './dto/login.dto';
 import { LogoffDto } from './dto/logoff.dto';
 
@@ -94,5 +95,30 @@ export class UserService {
                 created_at: 'desc',
             },
         });
+    }
+
+    async findOne(user_id: string) {
+        if (!UUIDv4.validate(user_id)) {
+            throw new HttpException('Invalid id', 400);
+        }
+
+        const user = await this.prisma.user.findFirst({
+            where: {
+                id: user_id,
+            },
+            include: {
+                adm_matches: true,
+                matches: true,
+                adm_rooms: true,
+                rooms: true,
+                receiver_rounds: true,
+                sender_rounds: true,
+            },
+        });
+
+        if (!user) {
+            throw new HttpException('User not found', 404);
+        }
+        return user;
     }
 }
