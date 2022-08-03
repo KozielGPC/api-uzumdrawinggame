@@ -4,7 +4,7 @@ import { MatchController } from './match.controller';
 import { PrismaService } from 'src/database/PrismaService';
 
 @Module({
-  controllers: [MatchController],
-  providers: [MatchService, PrismaService]
+    controllers: [MatchController],
+    providers: [MatchService, PrismaService],
 })
-export class MatchModule { }
+export class MatchModule {}
