@@ -1,11 +1,10 @@
 import { WebSocketGateway, SubscribeMessage, MessageBody, WebSocketServer } from '@nestjs/websockets';
 import { MessagesService } from './messages.service';
-import { CreateMessageDto } from './dto/create-message.dto';
-import { UpdateMessageDto } from './dto/update-message.dto';
 import { Server, Socket } from 'socket.io';
 import { Logger } from '@nestjs/common';
 import { MatchService } from 'src/modules/match/match.service';
 import { RoundService } from 'src/modules/round/round.service';
+import { RoundType } from 'prisma/@generated';
 
 @WebSocketGateway({ cors: true })
 export class MessagesGateway {
@@ -54,9 +53,26 @@ export class MessagesGateway {
     }
 
     @SubscribeMessage('sendRound')
-    async sendRound(client: Socket, payload: { match_id: string; content: string; sender_id: string }): Promise<void> {
-        const round = await this.roundService.update(payload);
+    async sendRound(
+        client: Socket,
+        payload: { match_id: string; content: string; sender_id: string; type: RoundType },
+    ): Promise<void> {
+        const match = await this.matchService.findOne(payload.match_id);
 
-        this.server.emit('receiveRound', round, client.id);
+        const receiver_id = this.matchService.findNextReceiver(match.sort, payload.sender_id);
+
+        const round = await this.roundService.create({
+            type: payload.type,
+            match_id: payload.match_id,
+            content: payload.content,
+            sender_id: payload.sender_id,
+            receiver_id: receiver_id,
+        });
+
+        if (receiver_id) {
+            this.server.emit('receiveRound', round, client.id);
+        } else {
+            this.server.emit('endMatch', match.id, client.id);
+        }
     }
 }
