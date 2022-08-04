@@ -84,6 +84,20 @@ export class MatchService {
         });
     }
 
+    async findOne(match_id: string) {
+        return this.prisma.match.findUnique({
+            where: {
+                id: match_id,
+            },
+            include: {
+                match_adm: true,
+                room: true,
+                rounds: true,
+                users: true,
+            },
+        });
+    }
+
     async findRoundsOfMatch(match_id: string) {
         const match = await this.prisma.match.findFirst({
             where: {
@@ -107,5 +121,17 @@ export class MatchService {
         }
 
         return match;
+    }
+
+    findNextReceiver(sort: string, current_player_id: string) {
+        const splitedSort = sort.split(',');
+        let nextReceiverId = null;
+        for (let i = 0; i < splitedSort.length; i++) {
+            if (splitedSort[i] == current_player_id && i < splitedSort.length - 1) {
+                nextReceiverId = splitedSort[i + 1];
+            }
+        }
+
+        return nextReceiverId;
     }
 }
