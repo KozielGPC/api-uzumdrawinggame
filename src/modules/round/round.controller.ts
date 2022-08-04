@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { RoundService } from './round.service';
 import { CreateRoundDto } from './dto/create-round.dto';
+import { UpdateRoundDto } from './dto/update-round.dto';
 
 @Controller('round')
 export class RoundController {
@@ -16,14 +17,14 @@ export class RoundController {
         return this.roundService.findAll();
     }
 
+    @Patch('/update')
+    update(@Body() data: UpdateRoundDto) {
+        return this.roundService.update(data);
+    }
+
     // @Get(':id')
     // findOne(@Param('id') id: string) {
     //   return this.roundService.findOne(+id);
-    // }
-
-    // @Patch(':id')
-    // update(@Param('id') id: string, @Body() updateRoundDto: UpdateRoundDto) {
-    //   return this.roundService.update(+id, updateRoundDto);
     // }
 
     // @Delete(':id')

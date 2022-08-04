@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/database/PrismaService';
 import { CreateRoundDto } from './dto/create-round.dto';
+import { UpdateRoundDto } from './dto/update-round.dto';
 
 @Injectable()
 export class RoundService {
@@ -33,9 +34,26 @@ export class RoundService {
     //   return `This action returns a #${id} round`;
     // }
 
-    // update(id: number, updateRoundDto: UpdateRoundDto) {
-    //   return `This action updates a #${id} round`;
-    // }
+    async update(data: UpdateRoundDto) {
+        const round = await this.prisma.round.findFirst({
+            where: {
+                match_id: data.match_id,
+                sender_id: data.sender_id,
+            },
+        });
+
+        if (!round) {
+        }
+
+        return this.prisma.round.update({
+            where: {
+                id: round.id,
+            },
+            data: {
+                content: data.content,
+            },
+        });
+    }
 
     // remove(id: number) {
     //   return `This action removes a #${id} round`;

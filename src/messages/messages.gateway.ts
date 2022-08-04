@@ -5,10 +5,15 @@ import { UpdateMessageDto } from './dto/update-message.dto';
 import { Server, Socket } from 'socket.io';
 import { Logger } from '@nestjs/common';
 import { MatchService } from 'src/modules/match/match.service';
+import { RoundService } from 'src/modules/round/round.service';
 
 @WebSocketGateway({ cors: true })
 export class MessagesGateway {
-    constructor(private readonly messagesService: MessagesService, private readonly matchService: MatchService) {}
+    constructor(
+        private readonly messagesService: MessagesService,
+        private readonly matchService: MatchService,
+        private readonly roundService: RoundService,
+    ) {}
 
     @WebSocketServer() server: Server;
     private logger: Logger = new Logger('SocketGateway');
@@ -46,5 +51,12 @@ export class MessagesGateway {
 
         const lastRound = rounds.rounds[0];
         this.server.emit('receiveRound', lastRound, client.id);
+    }
+
+    @SubscribeMessage('sendRound')
+    async sendRound(client: Socket, payload: { match_id: string; content: string; sender_id: string }): Promise<void> {
+        const round = await this.roundService.update(payload);
+
+        this.server.emit('receiveRound', round, client.id);
     }
 }
