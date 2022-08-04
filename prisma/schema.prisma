@@ -24,6 +24,7 @@ model User {
   adm_matches     Match[]
   sender_rounds   Round[]         @relation("sender")
   receiver_rounds Round[]         @relation("receiver")
+
   @@map("users")
 }
 
@@ -44,6 +45,7 @@ model Match {
   room      Room            @relation(fields: [room_id], references: [id])
   users     MatchHasUsers[]
   rounds    Round[]
+
   @@map("matches")
 }
 
@@ -54,7 +56,7 @@ model Round {
 
   sender_id String @db.Uuid
 
-  receiver_id String @db.Uuid
+  receiver_id String? @db.Uuid
 
   content String @db.Text
 
@@ -66,7 +68,8 @@ model Round {
 
   match    Match @relation(fields: [match_id], references: [id])
   sender   User  @relation(fields: [sender_id], references: [id], name: "sender")
-  receiver User  @relation(fields: [receiver_id], references: [id], name: "receiver")
+  receiver User? @relation(fields: [receiver_id], references: [id], name: "receiver")
+
   @@map("rounds")
 }
 
@@ -91,6 +94,7 @@ model Room {
   room_adm User           @relation(fields: [room_adm_id], references: [id])
   users    RoomHasUsers[]
   matches  Match[]
+
   @@map("rooms")
 }
 
