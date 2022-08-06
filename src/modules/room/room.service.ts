@@ -131,6 +131,9 @@ export class RoomService {
             select: {
                 room_adm: true,
                 users: {
+                    where: {
+                        active: true,
+                    },
                     include: {
                         user: true,
                     },

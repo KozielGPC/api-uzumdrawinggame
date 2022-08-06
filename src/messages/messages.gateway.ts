@@ -5,6 +5,7 @@ import { Logger } from '@nestjs/common';
 import { MatchService } from 'src/modules/match/match.service';
 import { RoundService } from 'src/modules/round/round.service';
 import { RoundType } from 'prisma/@generated';
+import { RoomService } from 'src/modules/room/room.service';
 
 @WebSocketGateway({ cors: true })
 export class MessagesGateway {
@@ -12,6 +13,7 @@ export class MessagesGateway {
         private readonly messagesService: MessagesService,
         private readonly matchService: MatchService,
         private readonly roundService: RoundService,
+        private readonly roomService: RoomService,
     ) {}
 
     @WebSocketServer() server: Server;
@@ -40,8 +42,9 @@ export class MessagesGateway {
     }
 
     @SubscribeMessage('updateRoomPlayers')
-    updateRoomPlayers(client: Socket, payload: string): void {
-        this.server.emit('updatePlayers', payload, client.id);
+    async updateRoomPlayers(client: Socket, payload: string): Promise<void> {
+        const roomPlayers = await this.roomService.getPlayers(payload);
+        this.server.emit('updatePlayers', roomPlayers, client.id);
     }
 
     @SubscribeMessage('sendNextRound')
@@ -72,7 +75,8 @@ export class MessagesGateway {
         if (receiver_id) {
             this.server.emit('receiveRound', round, client.id);
         } else {
-            this.server.emit('endMatch', match.id, client.id);
+            const rounds = await this.matchService.findRoundsOfMatch(payload.match_id);
+            this.server.emit('endMatch', { match_id: payload.match_id, rounds }, client.id);
         }
     }
 }
