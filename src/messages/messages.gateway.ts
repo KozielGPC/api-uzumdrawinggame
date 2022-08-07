@@ -79,4 +79,9 @@ export class MessagesGateway {
             this.server.emit('endMatch', { match_id: payload.match_id, rounds }, client.id);
         }
     }
+
+    @SubscribeMessage('addShowRound')
+    async addShowRound(client: Socket, payload: any): Promise<void> {
+        this.server.emit('showNext', payload);
+    }
 }
