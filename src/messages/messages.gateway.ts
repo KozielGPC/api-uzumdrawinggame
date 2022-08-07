@@ -82,6 +82,11 @@ export class MessagesGateway {
 
     @SubscribeMessage('addShowRound')
     async addShowRound(client: Socket, payload: any): Promise<void> {
-        this.server.emit('showNext', payload);
+        this.server.emit('showNext', payload, client.id);
+    }
+
+    @SubscribeMessage('restartGame')
+    async restartGame(client: Socket, payload: any): Promise<void> {
+        this.server.emit('restartGame', payload, client.id);
     }
 }
