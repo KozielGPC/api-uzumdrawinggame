@@ -56,7 +56,7 @@ export class UserService {
                 },
             });
         } else {
-            return user;
+            throw new HttpException('User already connected', 400);
         }
     }
 
